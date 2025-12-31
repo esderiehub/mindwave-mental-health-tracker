@@ -41,10 +41,73 @@
                                     <h3 id="total-entries">0</h3>
                                     <p>Total Entries</p>
                                 </div>
-                                
+                                <div class="start-card">
+                                    <div class="start-icon">😊</div>
+                                    <h3 id="current-streak">0</h3>
+                                    <p>Day Streak</p>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"⚡></div>
+                                    <h3 id="avg-energy">--</h3>
+                                    <p>Avg Energy</p>
+                                </div>
                              </div>
+                             <!-- Quick Track Button -->
+                              <div class="quick-track">
+                                <button class="track-btn" onclick="showSection('track')">
+                                    <i class="fas fa-plus"></i>
+                                    Track Your Mood Now
+                                </button>
+                              </div>
+                              <!-- Charat Container -->
+                               <div class="chart-container">
+                                <h2>Your Mood Journey</h2>
+                                <canvas id="moodChart"></canvas>
+                               </div>
                         </div>
                      </section>
+                     <!-- Track Mood Section -->
+                      <section id="track" class="section">
+                        <div class="cantainer">
+                            <h1>Track Your Mood 🎯</h1>
+
+                            <form id="mood-form" class="mood-form">
+                                <!-- Date Input -->
+                                 <div class="form-group">
+                                    <label>Daye:</label>
+                                    <input type="date" id="mood-date" required>
+                                 </div>
+
+                                 <!-- Mood Selection -->
+                                  <div class="form-group">
+                                    <label>How do you feel?</label>
+                                    <div class="mood-selector">
+                                        <div class="mood-option" data-value="1">
+                                            <span class="mood-emoji">😢</span>
+                                            <span>Very Sad</span>
+                                        </div>
+                                        <div class="mood-option" data-value="2">
+                                            <span class="mood-emoji">😔</span>
+                                            <span>Very Sad</span>
+                                        </div>
+                                        <div class="mood-option" data-value="3">
+                                            <span class="mood-emoji">😐</span>
+                                            <span>Neutral</span>
+                                        </div>
+                                        <div class="mood-option" data-value="4">
+                                            <span class="mood-emoji">😊</span>
+                                            <span>Happy</span>
+                                        </div>
+                                        <div class="mood-option" data-value="5">
+                                            <span class="mood-emoji">😄</span>
+                                            <span>Very Happy</span>
+                                        </div>
+                                    </div>
+                                  </div>
+                                  <!-- Energy Slider -->
+                            </form>
+                        </div>
+                      </section>
                   </main>
             </body>
         </head>
