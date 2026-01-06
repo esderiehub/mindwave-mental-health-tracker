@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindWave - Mental Health Tracker</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -13,14 +13,14 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <i class="fas fa-brain"></i>
+                <i class="brain-icon">🧠</i>
                 <span>MindWave</span>
             </div>
             <ul class="nav-menu">
-                <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
-                <li><a href="#track" class="nav-link">Track Mood</a></li>
-                <li><a href="#insights" class="nav-link">Insights</a></li>
-                <li><a href="#journal" class="nav-link">Journal</a></li>
+                <li><button class="nav-link active" data-tab="dashboard">Dashboard</button></li>
+                <li><button class="nav-link" data-tab="track">Track Mood</button></li>
+                <li><button class="nav-link" data-tab="insights">Insights</button></li>
+                <li><button class="nav-link" data-tab="journal">Journal</button></li>
             </ul>
         </div>
     </nav>
@@ -61,8 +61,8 @@
 
                 <!-- Quick Track Button -->
                 <div class="quick-track">
-                    <button class="track-btn" onclick="showSection('track')">
-                        <i class="fas fa-plus"></i>
+                    <button class="track-btn" onclick="switchToTab('track')">
+                        <i class="plus-icon">➕</i>
                         Track Your Mood Now
                     </button>
                 </div>
@@ -151,7 +151,18 @@
             <div class="container">
                 <h1>Your Insights 🔍</h1>
                 <div id="insights-content">
-                    <p>Start tracking your mood to unlock personalized insights!</p>
+                    <div class="insight-card">
+                        <h3>Pattern Analysis</h3>
+                        <p>Start tracking your mood to unlock personalized insights!</p>
+                    </div>
+                    <div class="insight-card">
+                        <h3>Activity Impact</h3>
+                        <p>Discover which activities boost your mood the most.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h3>Weekly Trends</h3>
+                        <p>See how your mood changes throughout the week.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -160,13 +171,28 @@
         <section id="journal" class="section">
             <div class="container">
                 <h1>Journal 📝</h1>
-                <div id="journal-entries">
-                    <p>Your private thoughts and reflections will appear here.</p>
+                <div class="journal-container">
+                    <div class="journal-header">
+                        <button class="add-entry-btn" onclick="showJournalForm()">
+                            ➕ New Entry
+                        </button>
+                    </div>
+                    <div id="journal-form" class="journal-form" style="display: none;">
+                        <input type="text" id="journal-title" placeholder="Entry title...">
+                        <textarea id="journal-content" placeholder="Write your thoughts..."></textarea>
+                        <div class="journal-actions">
+                            <button onclick="saveJournalEntry()">Save</button>
+                            <button onclick="hideJournalForm()">Cancel</button>
+                        </div>
+                    </div>
+                    <div id="journal-entries">
+                        <p class="empty-state">Your private thoughts and reflections will appear here.</p>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <script src="js/app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
