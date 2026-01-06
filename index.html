@@ -1,158 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mindwave - Menthal health Tracker</title>
-        <link rel="stylesheet" href="css/style.css">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
-        <head>
-            <body>
-                <!-- Navigation -->
-                 <nav class="navbar">
-                    <div class="nac contanier">
-                        <div class="logo">
-                            <i class="fas fa-brain"></i>
-                            <span>MindWave</span>
-                        </div>
-                            <ul class="nav-menu">
-                                <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
-                                <li><a href="#track" class="nav-link">Track Mood</a></li>
-                                <li><a href="#insights" class="nav-link">Insights</a></li>
-                                <li><a href="#journal class="nav-link">Journal</a></li>
-                            </ul>
-                        </div>
-                 </nav>
-                 <!-- Main Content-->
-                  <main class="main-content"> 
-                    <!-- Dashboard Section-->
-                     <section id="dashboard" class="section active">
-                        <div class="container">
-                            <div class="welcome-header">
-                                <h1>Welcome back!👋</h1>
-                                <p> How are you felling today?</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindWave - Mental Health Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>MindWave</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="#track" class="nav-link">Track Mood</a></li>
+                <li><a href="#insights" class="nav-link">Insights</a></li>
+                <li><a href="#journal" class="nav-link">Journal</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="container">
+                <div class="welcome-header">
+                    <h1>Welcome back! 👋</h1>
+                    <p>How are you feeling today?</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <h3 id="total-entries">0</h3>
+                        <p>Total Entries</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <h3 id="current-streak">0</h3>
+                        <p>Day Streak</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">😊</div>
+                        <h3 id="avg-mood">--</h3>
+                        <p>Avg Mood</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <h3 id="avg-energy">--</h3>
+                        <p>Avg Energy</p>
+                    </div>
+                </div>
+
+                <!-- Quick Track Button -->
+                <div class="quick-track">
+                    <button class="track-btn" onclick="showSection('track')">
+                        <i class="fas fa-plus"></i>
+                        Track Your Mood Now
+                    </button>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <h2>Your Mood Journey</h2>
+                    <canvas id="moodChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Track Mood Section -->
+        <section id="track" class="section">
+            <div class="container">
+                <h1>Track Your Mood 🎯</h1>
+                
+                <form id="mood-form" class="mood-form">
+                    <!-- Date Input -->
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" id="mood-date" required>
+                    </div>
+
+                    <!-- Mood Selection -->
+                    <div class="form-group">
+                        <label>How do you feel?</label>
+                        <div class="mood-selector">
+                            <div class="mood-option" data-value="1">
+                                <span class="mood-emoji">😢</span>
+                                <span>Very Sad</span>
                             </div>
-
-                            <!-- Stats Cards-->
-                             <div class="stats-grid">
-                                <div class="stat-card">
-                                    <div clas="stat-icon">📊</div>
-                                    <h3 id="total-entries">0</h3>
-                                    <p>Total Entries</p>
-                                </div>
-                                <div class="start-card">
-                                    <div class="start-icon">😊</div>
-                                    <h3 id="current-streak">0</h3>
-                                    <p>Day Streak</p>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon"⚡></div>
-                                    <h3 id="avg-energy">--</h3>
-                                    <p>Avg Energy</p>
-                                </div>
-                             </div>
-                             <!-- Quick Track Button -->
-                              <div class="quick-track">
-                                <button class="track-btn" onclick="showSection('track')">
-                                    <i class="fas fa-plus"></i>
-                                    Track Your Mood Now
-                                </button>
-                              </div>
-                              <!-- Charat Container -->
-                               <div class="chart-container">
-                                <h2>Your Mood Journey</h2>
-                                <canvas id="moodChart"></canvas>
-                               </div>
+                            <div class="mood-option" data-value="2">
+                                <span class="mood-emoji">😔</span>
+                                <span>Sad</span>
+                            </div>
+                            <div class="mood-option" data-value="3">
+                                <span class="mood-emoji">😐</span>
+                                <span>Neutral</span>
+                            </div>
+                            <div class="mood-option" data-value="4">
+                                <span class="mood-emoji">😊</span>
+                                <span>Happy</span>
+                            </div>
+                            <div class="mood-option" data-value="5">
+                                <span class="mood-emoji">😄</span>
+                                <span>Very Happy</span>
+                            </div>
                         </div>
-                     </section>
-                     <!-- Track Mood Section -->
-                      <section id="track" class="section">
-                        <div class="cantainer">
-                            <h1>Track Your Mood 🎯</h1>
+                    </div>
 
-                            <form id="mood-form" class="mood-form">
-                                <!-- Date Input -->
-                                 <div class="form-group">
-                                    <label>Daye:</label>
-                                    <input type="date" id="mood-date" required>
-                                 </div>
+                    <!-- Energy Slider -->
+                    <div class="form-group">
+                        <label>Energy Level: <span id="energy-value">5</span>/10</label>
+                        <input type="range" id="energy-slider" min="1" max="10" value="5">
+                    </div>
 
-                                 <!-- Mood Selection -->
-                                  <div class="form-group">
-                                    <label>How do you feel?</label>
-                                    <div class="mood-selector">
-                                        <div class="mood-option" data-value="1">
-                                            <span class="mood-emoji">😢</span>
-                                            <span>Very Sad</span>
-                                        </div>
-                                        <div class="mood-option" data-value="2">
-                                            <span class="mood-emoji">😔</span>
-                                            <span>Very Sad</span>
-                                        </div>
-                                        <div class="mood-option" data-value="3">
-                                            <span class="mood-emoji">😐</span>
-                                            <span>Neutral</span>
-                                        </div>
-                                        <div class="mood-option" data-value="4">
-                                            <span class="mood-emoji">😊</span>
-                                            <span>Happy</span>
-                                        </div>
-                                        <div class="mood-option" data-value="5">
-                                            <span class="mood-emoji">😄</span>
-                                            <span>Very Happy</span>
-                                        </div>
-                                    </div>
-                                  </div>
-                                  <!-- Energy Slider -->
-                                   <div class="form-group">
-                                    <label>Activites Today:</label>
-                                    <div class="activity-tags">
-                                        <span class="tag" data-activity="exercise">🏃‍♂️ Exercise</span>
-                                        <span class="tag" data-activitey="study">📚 Study</span>
-                                        <span class="tag" data-activitey="socail">👥 Social</span>
-                                        <span class="tag" data-activitey="gaming">🎮 Gaming</span>
-                                        <span class="tag" data-activitey="music">🎵 Music</span>
-                                        <span class="tag" data-activitey="nature">🌿 Nature</span>
-                                        <span class="tag" data-activitey="rest">😴 Rest</span>
-                                        <span class="tag" data-activitey="food">🍕 Good Food</span>
-                                    </div>
-                                   </div>
-
-                                   <!-- Notes -->
-                                    <div class="form group">
-                                        <label>Notes (optional):</label>
-                                        <textarea id="mood-notes" placeholder="How was your day?"></textarea>
-                                    </div>
-
-                                    <button type="submit" class="submit-btn">Save Entry</button>
-                            </form>
+                    <!-- Activities -->
+                    <div class="form-group">
+                        <label>Activities Today:</label>
+                        <div class="activity-tags">
+                            <span class="tag" data-activity="exercise">🏃‍♂️ Exercise</span>
+                            <span class="tag" data-activity="study">📚 Study</span>
+                            <span class="tag" data-activity="social">👥 Social</span>
+                            <span class="tag" data-activity="gaming">🎮 Gaming</span>
+                            <span class="tag" data-activity="music">🎵 Music</span>
+                            <span class="tag" data-activity="nature">🌿 Nature</span>
+                            <span class="tag" data-activity="rest">😴 Rest</span>
+                            <span class="tag" data-activity="food">🍕 Good Food</span>
                         </div>
-                      </section>
+                    </div>
 
-                                                         <!-- Insights section -->
-                                    <section id="insights" class="section">
-                                        <div class="container">
-                                            <h1>Your Insights 🔍</h1>
-                                            <div id="insights-content">
-                                                <p>Start tracking your mood to unlock personalized insights!</p>
-                                            </div>
-                                        </div>
-                                    </section>
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label>Notes (optional):</label>
+                        <textarea id="mood-notes" placeholder="How was your day?"></textarea>
+                    </div>
 
-                                    <!-- Journal Section-->
-                                     <section id="journal" class="section">
-                                        <div class="container">
-                                            <h1>Journal 📝</h1>
-                                            <div id="journal-entries">
-                                                <pp>Your private thoughts and reflections will appear here.</pp>
-                                            </div>
-                                        </div>
-                                     </section>
-                  </main>
+                    <button type="submit" class="submit-btn">Save Entry</button>
+                </form>
+            </div>
+        </section>
 
-                  <script src="js/app.js"></script>
-            </body>
-        </head>
-    </head>
+        <!-- Insights Section -->
+        <section id="insights" class="section">
+            <div class="container">
+                <h1>Your Insights 🔍</h1>
+                <div id="insights-content">
+                    <p>Start tracking your mood to unlock personalized insights!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journal Section -->
+        <section id="journal" class="section">
+            <div class="container">
+                <h1>Journal 📝</h1>
+                <div id="journal-entries">
+                    <p>Your private thoughts and reflections will appear here.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
 </html>
