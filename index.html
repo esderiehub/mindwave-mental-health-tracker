@@ -1,22 +1,918 @@
-<link rel="stylesheet" href="style.css">  
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindWave - Mental Health Tracker</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: backgroundMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            33% { transform: translateX(-30px) translateY(-50px); }
+            66% { transform: translateX(20px) translateY(30px); }
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brain-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.6));
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid transparent;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .section {
+            display: none;
+            animation: slideInUp 0.6s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes slideInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .welcome-header, .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .welcome-header h1, .section-header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.1); }
+        }
+
+        .subtitle, .section-header p {
+            font-size: 1.3rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .current-date {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-weight: 600;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card.blue::before { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .stat-card.orange::before { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .stat-card.green::before { background: linear-gradient(135deg, #10b981, #047857); }
+        .stat-card.purple::before { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 35px 60px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 3.5rem;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+        }
+
+        .stat-content h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-content p {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 3rem;
+            border: none;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .quick-action-btn.primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .quick-action-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .quick-action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-section {
+            margin-bottom: 4rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .chart-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .chart-period {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .period-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            background: rgba(255, 255, 255, 0.7);
+            color: #64748b;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .period-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 400px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recent-entries {
+            margin-top: 3rem;
+        }
+
+        .recent-entries h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2rem;
+        }
+
+        .entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .entry-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .entry-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .entry-mood {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+        }
+
+        .entry-details {
+            flex: 1;
+        }
+
+        .entry-date {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .entry-stats {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Form Styles */
+        .track-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .mood-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .mood-item:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .mood-item.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .mood-emoji {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+        }
+
+        .mood-label {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .energy-display {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .energy-slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.7);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .energy-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .energy-slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .activity-tag {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .activity-tag:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .activity-tag.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .activity-emoji {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+            z-index: 1001;
+            animation: slideInRight 0.5s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .success-message.hidden {
+            display: none;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .success-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Journal Styles */
+        .journal-actions {
+            margin-bottom: 2rem;
+        }
+
+        .new-entry-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .new-entry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .journal-form {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .journal-entry {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .journal-entry:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .journal-entry h3 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .journal-entry .date {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Insights Styles */
+        .insights-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .insight-placeholder {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+        }
+
+        .placeholder-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.3));
+        }
+
+        .cta-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .insight-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.2));
+        }
+
+        .insight-card h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .insight-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            
+            .container {
+                padding: 2rem;
+            }
+            
+            .welcome-header h1, .section-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-container">
                 <div class="logo">
                     <span class="brain-icon">🧠</span>
-                    <span class="logo-text">MindWave</span>
+                    <h1 class="logo-text">MindWave</h1>
                 </div>
                 <ul class="nav-menu">
                     <li><button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button></li>
@@ -27,7 +923,6 @@
             </div>
         </nav>
 
-        <!-- Main Content -->
         <main class="main-content">
             <!-- Dashboard Section -->
             <section id="dashboard" class="section active">
@@ -38,31 +933,30 @@
                         <div class="current-date" id="currentDate"></div>
                     </div>
 
-                    <!-- Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-card blue">
-                            <div class="stat-icon">📊</div>
+                            <span class="stat-icon">📊</span>
                             <div class="stat-content">
                                 <h3 id="totalEntries">0</h3>
                                 <p>Total Entries</p>
                             </div>
                         </div>
                         <div class="stat-card orange">
-                            <div class="stat-icon">🔥</div>
+                            <span class="stat-icon">🔥</span>
                             <div class="stat-content">
-                                <h3 id="currentStreak">0</h3>
+                                <h3 id="dayStreak">0</h3>
                                 <p>Day Streak</p>
                             </div>
                         </div>
                         <div class="stat-card green">
-                            <div class="stat-icon">😊</div>
+                            <span class="stat-icon">😊</span>
                             <div class="stat-content">
                                 <h3 id="avgMood">--</h3>
                                 <p>Avg Mood</p>
                             </div>
                         </div>
                         <div class="stat-card purple">
-                            <div class="stat-icon">⚡</div>
+                            <span class="stat-icon">⚡</span>
                             <div class="stat-content">
                                 <h3 id="avgEnergy">--</h3>
                                 <p>Avg Energy</p>
@@ -70,25 +964,24 @@
                         </div>
                     </div>
 
-                    <!-- Quick Actions -->
                     <div class="quick-actions">
                         <button class="quick-action-btn primary" onclick="showSection('track')">
-                            <span class="btn-icon">➕</span>
-                            <span>Track Your Mood Now</span>
+                            <span class="btn-icon">📝</span>
+                            Track Your Mood Now
                         </button>
                         <button class="quick-action-btn secondary" onclick="showSection('journal')">
-                            <span class="btn-icon">📝</span>
-                            <span>Write in Journal</span>
+                            <span class="btn-icon">📖</span>
+                            Write in Journal
                         </button>
                     </div>
 
-                    <!-- Chart Section -->
                     <div class="chart-section">
                         <div class="chart-header">
                             <h2>Your Mood Journey</h2>
                             <div class="chart-period">
-                                <button class="period-btn active" onclick="updateChartPeriod(7)">7D</button>
-                                <button class="period-btn" onclick="updateChartPeriod(30)">30D</button>
+                                <button class="period-btn active" data-period="7">7 Days</button>
+                                <button class="period-btn" data-period="30">30 Days</button>
+                                <button class="period-btn" data-period="90">90 Days</button>
                             </div>
                         </div>
                         <div class="chart-container">
@@ -96,11 +989,12 @@
                         </div>
                     </div>
 
-                    <!-- Recent Entries -->
                     <div class="recent-entries">
                         <h2>Recent Entries</h2>
                         <div id="recentEntriesList" class="entries-list">
-                            <p class="empty-state">Start tracking to see your entries here!</p>
+                            <div class="empty-state">
+                                No mood entries yet. Start tracking to see your journey!
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,97 +1004,96 @@
             <section id="track" class="section">
                 <div class="container">
                     <div class="section-header">
-                        <h1>Track Your Mood 🎯</h1>
-                        <p>How are you feeling right now?</p>
+                        <h1>Track Your Mood</h1>
+                        <p>Take a moment to reflect on how you're feeling today</p>
                     </div>
 
-                    <div class="track-form">
-                        <form id="moodForm">
-                            <!-- Date Selection -->
-                            <div class="form-group">
-                                <label class="form-label">Date</label>
-                                <input type="date" id="moodDate" class="date-input" required>
-                            </div>
+                    <form class="track-form" id="moodForm">
+                        <div class="form-group">
+                            <label class="form-label">Date <span class="required">*</span></label>
+                            <input type="date" class="date-input" id="entryDate" required>
+                        </div>
 
-                            <!-- Mood Selection -->
-                            <div class="form-group">
-                                <label class="form-label">How do you feel? <span class="required">*</span></label>
-                                <div class="mood-grid">
-                                    <div class="mood-item" data-mood="1">
-                                        <div class="mood-emoji">😢</div>
-                                        <div class="mood-label">Very Sad</div>
-                                    </div>
-                                    <div class="mood-item" data-mood="2">
-                                        <div class="mood-emoji">😔</div>
-                                        <div class="mood-label">Sad</div>
-                                    </div>
-                                    <div class="mood-item" data-mood="3">
-                                        <div class="mood-emoji">😐</div>
-                                        <div class="mood-label">Neutral</div>
-                                    </div>
-                                    <div class="mood-item" data-mood="4">
-                                        <div class="mood-emoji">😊</div>
-                                        <div class="mood-label">Happy</div>
-                                    </div>
-                                    <div class="mood-item" data-mood="5">
-                                        <div class="mood-emoji">😄</div>
-                                        <div class="mood-label">Very Happy</div>
-                                    </div>
+                        <div class="form-group">
+                            <label class="form-label">How are you feeling? <span class="required">*</span></label>
+                            <div class="mood-grid">
+                                <div class="mood-item" data-mood="1">
+                                    <span class="mood-emoji">😢</span>
+                                    <span class="mood-label">Very Sad</span>
+                                </div>
+                                <div class="mood-item" data-mood="2">
+                                    <span class="mood-emoji">😕</span>
+                                    <span class="mood-label">Sad</span>
+                                </div>
+                                <div class="mood-item" data-mood="3">
+                                    <span class="mood-emoji">😐</span>
+                                    <span class="mood-label">Neutral</span>
+                                </div>
+                                <div class="mood-item" data-mood="4">
+                                    <span class="mood-emoji">😊</span>
+                                    <span class="mood-label">Happy</span>
+                                </div>
+                                <div class="mood-item" data-mood="5">
+                                    <span class="mood-emoji">😄</span>
+                                    <span class="mood-label">Very Happy</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Energy Level -->
-                            <div class="form-group">
-                                <label class="form-label">Energy Level: <span id="energyValue">5</span>/10</label>
-                                <div class="slider-container">
-                                    <input type="range" id="energySlider" min="1" max="10" value="5" class="energy-slider">
+                        <div class="form-group">
+                            <label class="form-label">Energy Level <span class="required">*</span></label>
+                            <input type="range" class="energy-slider" id="energySlider" min="1" max="5" value="3">
+                            <div class="energy-display" id="energyDisplay">3/5</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Activities (Select all that apply)</label>
+                            <div class="activities-grid">
+                                <div class="activity-tag" data-activity="exercise">
+                                    <span class="activity-emoji">🏃‍♀️</span>
+                                    <span>Exercise</span>
+                                </div>
+                                <div class="activity-tag" data-activity="work">
+                                    <span class="activity-emoji">💼</span>
+                                    <span>Work</span>
+                                </div>
+                                <div class="activity-tag" data-activity="social">
+                                    <span class="activity-emoji">👥</span>
+                                    <span>Social</span>
+                                </div>
+                                <div class="activity-tag" data-activity="family">
+                                    <span class="activity-emoji">👨‍👩‍👧‍👦</span>
+                                    <span>Family</span>
+                                </div>
+                                <div class="activity-tag" data-activity="sleep">
+                                    <span class="activity-emoji">😴</span>
+                                    <span>Sleep</span>
+                                </div>
+                                <div class="activity-tag" data-activity="hobby">
+                                    <span class="activity-emoji">🎨</span>
+                                    <span>Hobby</span>
+                                </div>
+                                <div class="activity-tag" data-activity="study">
+                                    <span class="activity-emoji">📚</span>
+                                    <span>Study</span>
+                                </div>
+                                <div class="activity-tag" data-activity="relax">
+                                    <span class="activity-emoji">🧘‍♂️</span>
+                                    <span>Relax</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Activities -->
-                            <div class="form-group">
-                                <label class="form-label">What did you do today?</label>
-                                <div class="activities-grid">
-                                    <div class="activity-tag" data-activity="exercise">
-                                        <span class="activity-emoji">🏃‍♂️</span>
-                                        <span>Exercise</span>
-                                    </div>
-                                    <div class="activity-tag" data-activity="study">
-                                        <span class="activity-emoji">📚</span>
-                                        <span>Study</span>
-                                    </div>
-                                    <div class="activity-tag" data-activity="social">
-                                        <span class="activity-emoji">👥</span>
-                                        <span>Social</span>
-                                    </div>
-                                    <div class="activity-tag" data-activity="gaming">
-                                        <span class="activity-emoji">🎮</span>
-                                        <span>Gaming</span>
-                                    </div>
-                                    <div class="activity-tag" data-activity="music">
-                                        <span class="activity-emoji">🎵</span>
-                                        <span>Music</span>
-                                    </div>
-                                    <div class="activity-tag" data-activity="nature">
-                                        <span class="activity-emoji">🌿</span>
-                                        <span>Nature</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes (Optional)</label>
+                            <textarea class="notes-textarea" id="notes" placeholder="How was your day? Any thoughts or reflections..."></textarea>
+                        </div>
 
-                            <!-- Notes -->
-                            <div class="form-group">
-                                <label class="form-label">Notes (optional)</label>
-                                <textarea id="moodNotes" class="notes-textarea" placeholder="How was your day?"></textarea>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button type="submit" class="submit-btn">
-                                <span class="btn-icon">💾</span>
-                                Save Mood Entry
-                            </button>
-                        </form>
-                    </div>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-icon">💾</span>
+                            Save Mood Entry
+                        </button>
+                    </form>
                 </div>
             </section>
 
@@ -208,15 +1101,16 @@
             <section id="insights" class="section">
                 <div class="container">
                     <div class="section-header">
-                        <h1>Your Insights 🔍</h1>
-                        <p>Discover patterns in your mental health journey</p>
+                        <h1>Your Insights</h1>
+                        <p>Discover patterns and trends in your mental wellness journey</p>
                     </div>
-                    <div id="insightsContent" class="insights-content">
+
+                    <div class="insights-content" id="insightsContent">
                         <div class="insight-placeholder">
-                            <div class="placeholder-icon">📈</div>
-                            <h3>Start Tracking to Unlock Insights!</h3>
-                            <p>Track your mood for a few days to discover personalized insights.</p>
-                            <button class="cta-btn" onclick="showSection('track')">Start Tracking</button>
+                            <div class="placeholder-icon">📊</div>
+                            <h2>Start tracking to unlock insights!</h2>
+                            <p>Add at least 7 mood entries to see personalized insights about your mental health patterns.</p>
+                            <button class="cta-btn" onclick="showSection('track')">Track Your First Mood</button>
                         </div>
                     </div>
                 </div>
@@ -226,54 +1120,534 @@
             <section id="journal" class="section">
                 <div class="container">
                     <div class="section-header">
-                        <h1>Personal Journal 📝</h1>
-                        <p>Your private space for thoughts and reflections</p>
+                        <h1>Your Journal</h1>
+                        <p>A private space for your thoughts and reflections</p>
                     </div>
 
                     <div class="journal-actions">
-                        <button class="new-entry-btn" onclick="showJournalForm()">
-                            <span class="btn-icon">➕</span>
-                            New Entry
+                        <button class="new-entry-btn" onclick="toggleJournalForm()">
+                            <span>✏️</span>
+                            New Journal Entry
                         </button>
                     </div>
 
-                    <!-- Journal Form -->
-                    <div id="journalForm" class="journal-form hidden">
-                        <div class="form-header">
-                            <h3>New Journal Entry</h3>
-                            <button class="close-btn" onclick="hideJournalForm()">✕</button>
+                    <div class="journal-form hidden" id="journalForm">
+                        <div class="form-group">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="date-input" id="journalTitle" placeholder="What's on your mind?">
                         </div>
-                        <form id="journalEntryForm">
-                            <input type="text" id="journalTitle" placeholder="What's on your mind?" class="journal-title-input" required>
-                            <textarea id="journalContent" placeholder="Write your thoughts here..." class="journal-content-input" required></textarea>
-                            <div class="form-actions">
-                                <button type="button" class="cancel-btn" onclick="hideJournalForm()">Cancel</button>
-                                <button type="submit" class="save-btn">Save Entry</button>
-                            </div>
-                        </form>
+                        <div class="form-group">
+                            <label class="form-label">Your thoughts...</label>
+                            <textarea class="notes-textarea" id="journalContent" style="min-height: 200px;" placeholder="Write about your day, your feelings, your goals, or anything that comes to mind..."></textarea>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="saveJournalEntry()">
+                            <span class="btn-icon">💾</span>
+                            Save Entry
+                        </button>
                     </div>
 
-                    <!-- Journal Entries -->
-                    <div id="journalEntries" class="journal-entries">
-                        <div class="journal-placeholder">
-                            <div class="placeholder-icon">📔</div>
-                            <h3>No journal entries yet</h3>
-                            <p>Start writing your thoughts and reflections.</p>
+                    <div id="journalEntries">
+                        <div class="empty-state">
+                            No journal entries yet. Click "New Journal Entry" to start writing!
                         </div>
                     </div>
                 </div>
             </section>
         </main>
+    </div>
 
-        <!-- Success Message -->
-        <div id="successMessage" class="success-message hidden">
-            <div class="success-content">
-                <span class="success-icon">✅</span>
-                <span class="success-text">Entry saved successfully!</span>
-            </div>
+    <!-- Success Message -->
+    <div class="success-message hidden" id="successMessage">
+        <div class="success-content">
+            <span>✅</span>
+            <span id="successText">Entry saved successfully!</span>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Data Storage
+        let moodEntries = JSON.parse(localStorage.getItem('moodEntries')) || [];
+        let journalEntries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+        let moodChart = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultDate();
+            setupEventListeners();
+            updateDashboard();
+            initializeChart();
+            displayJournalEntries();
+            displayRecentEntries();
+        });
+
+        // Set default date to today
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('entryDate').value = today;
+            document.getElementById('currentDate').textContent = formatDate(new Date());
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Mood selection
+            document.querySelectorAll('.mood-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.mood-item').forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Activity selection
+            document.querySelectorAll('.activity-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+
+            // Energy slider
+            document.getElementById('energySlider').addEventListener('input', function() {
+                document.getElementById('energyDisplay').textContent = `${this.value}/5`;
+            });
+
+            // Form submission
+            document.getElementById('moodForm').addEventListener('submit', saveMoodEntry);
+
+            // Chart period buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart();
+                });
+            });
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show selected section
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            if (sectionId === 'insights') {
+                updateInsights();
+            }
+        }
+
+        // Save mood entry
+        function saveMoodEntry(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('entryDate').value;
+            const selectedMood = document.querySelector('.mood-item.selected');
+            const energy = parseInt(document.getElementById('energySlider').value);
+            const notes = document.getElementById('notes').value;
+            const activities = Array.from(document.querySelectorAll('.activity-tag.selected'))
+                .map(tag => tag.dataset.activity);
+
+            if (!selectedMood) {
+                alert('Please select your mood!');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                date: date,
+                mood: parseInt(selectedMood.dataset.mood),
+                energy: energy,
+                activities: activities,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+
+            // Remove existing entry for the same date
+            moodEntries = moodEntries.filter(entry => entry.date !== date);
+            
+            // Add new entry
+            moodEntries.push(entry);
+            moodEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
+
+            showSuccess('Mood entry saved successfully!');
+            resetForm();
+            updateDashboard();
+            updateChart();
+            displayRecentEntries();
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('moodForm').reset();
+            setDefaultDate();
+            document.querySelectorAll('.mood-item').forEach(item => item.classList.remove('selected'));
+            document.querySelectorAll('.activity-tag').forEach(tag => tag.classList.remove('selected'));
+            document.getElementById('energyDisplay').textContent = '3/5';
+        }
+
+        // Update dashboard stats
+        function updateDashboard() {
+            const totalEntries = moodEntries.length;
+            const streak = calculateStreak();
+            const avgMood = calculateAverage('mood');
+            const avgEnergy = calculateAverage('energy');
+
+            document.getElementById('totalEntries').textContent = totalEntries;
+            document.getElementById('dayStreak').textContent = streak;
+            document.getElementById('avgMood').textContent = avgMood ? avgMood.toFixed(1) : '--';
+            document.getElementById('avgEnergy').textContent = avgEnergy ? avgEnergy.toFixed(1) : '--';
+        }
+
+        // Calculate streak
+        function calculateStreak() {
+            if (moodEntries.length === 0) return 0;
+
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < 365; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(today.getDate() - i);
+                const dateStr = checkDate.toISOString().split('T')[0];
+                
+                if (moodEntries.some(entry => entry.date === dateStr)) {
+                    streak++;
+                } else if (i > 0) {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        // Calculate average
+        function calculateAverage(field) {
+            if (moodEntries.length === 0) return null;
+            const sum = moodEntries.reduce((acc, entry) => acc + entry[field], 0);
+            return sum / moodEntries.length;
+        }
+
+        // Initialize chart
+        function initializeChart() {
+            const ctx = document.getElementById('moodChart');
+            if (!ctx) return;
+
+            moodChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Mood',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Energy',
+                        data: [],
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateChart();
+        }
+
+        // Update chart
+        function updateChart() {
+            if (!moodChart) return;
+
+            const activePeriod = document.querySelector('.period-btn.active')?.dataset.period || '7';
+            const days = parseInt(activePeriod);
+            
+            const chartData = getChartData(days);
+            
+            moodChart.data.labels = chartData.labels;
+            moodChart.data.datasets[0].data = chartData.mood;
+            moodChart.data.datasets[1].data = chartData.energy;
+            moodChart.update();
+        }
+
+        // Get chart data
+        function getChartData(days) {
+            const labels = [];
+            const moodData = [];
+            const energyData = [];
+
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                
+                const entry = moodEntries.find(e => e.date === dateStr);
+                moodData.push(entry ? entry.mood : null);
+                energyData.push(entry ? entry.energy : null);
+            }
+
+            return { labels, mood: moodData, energy: energyData };
+        }
+
+        // Display recent entries
+        function displayRecentEntries() {
+            const container = document.getElementById('recentEntriesList');
+            
+            if (moodEntries.length === 0) {
+                container.innerHTML = '<div class="empty-state">No mood entries yet. Start tracking to see your journey!</div>';
+                return;
+            }
+
+            const recent = moodEntries.slice(0, 5);
+            const moodEmojis = ['😢', '😕', '😐', '😊', '😄'];
+
+            container.innerHTML = recent.map(entry => `
+                <div class="entry-item">
+                    <span class="entry-mood">${moodEmojis[entry.mood - 1]}</span>
+                    <div class="entry-details">
+                        <div class="entry-date">${formatDate(new Date(entry.date))}</div>
+                        <div class="entry-stats">Mood: ${entry.mood}/5 • Energy: ${entry.energy}/5</div>
+                        ${entry.notes ? `<div class="entry-notes">${entry.notes}</div>` : ''}
+                    </div>
+                    <button class="delete-btn" onclick="deleteEntry(${entry.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Delete entry
+        function deleteEntry(id) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                moodEntries = moodEntries.filter(entry => entry.id !== id);
+                localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
+                
+                updateDashboard();
+                updateChart();
+                displayRecentEntries();
+                updateInsights();
+                showSuccess('Entry deleted successfully!');
+            }
+        }
+
+        // Journal functions
+        function toggleJournalForm() {
+            const form = document.getElementById('journalForm');
+            form.classList.toggle('hidden');
+            
+            if (!form.classList.contains('hidden')) {
+                document.getElementById('journalTitle').focus();
+            }
+        }
+
+        function saveJournalEntry() {
+            const title = document.getElementById('journalTitle').value.trim();
+            const content = document.getElementById('journalContent').value.trim();
+
+            if (!title || !content) {
+                alert('Please fill in both title and content!');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toISOString().split('T')[0],
+                timestamp: new Date().toISOString()
+            };
+
+            journalEntries.unshift(entry);
+            localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+
+            document.getElementById('journalTitle').value = '';
+            document.getElementById('journalContent').value = '';
+            document.getElementById('journalForm').classList.add('hidden');
+
+            displayJournalEntries();
+            showSuccess('Journal entry saved successfully!');
+        }
+
+        function displayJournalEntries() {
+            const container = document.getElementById('journalEntries');
+            
+            if (journalEntries.length === 0) {
+                container.innerHTML = '<div class="empty-state">No journal entries yet. Click "New Journal Entry" to start writing!</div>';
+                return;
+            }
+
+            container.innerHTML = journalEntries.map(entry => `
+                <div class="journal-entry">
+                    <h3>${entry.title}</h3>
+                    <div class="date">${formatDate(new Date(entry.date))}</div>
+                    <p>${entry.content}</p>
+                    <button class="delete-btn" onclick="deleteJournalEntry(${entry.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteJournalEntry(id) {
+            if (confirm('Are you sure you want to delete this journal entry?')) {
+                journalEntries = journalEntries.filter(entry => entry.id !== id);
+                localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+                displayJournalEntries();
+                showSuccess('Journal entry deleted successfully!');
+            }
+        }
+
+        // Update insights
+        function updateInsights() {
+            const container = document.getElementById('insightsContent');
+            
+            if (moodEntries.length < 7) {
+                container.innerHTML = `
+                    <div class="insight-placeholder">
+                        <div class="placeholder-icon">📊</div>
+                        <h2>Start tracking to unlock insights!</h2>
+                        <p>Add at least 7 mood entries to see personalized insights about your mental health patterns.</p>
+                        <p>Current entries: ${moodEntries.length}/7</p>
+                        <button class="cta-btn" onclick="showSection('track')">Track Your Mood</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const insights = generateInsights();
+            container.innerHTML = `
+                <div class="insights-grid">
+                    ${insights.map(insight => `
+                        <div class="insight-card">
+                            <div class="insight-icon">${insight.icon}</div>
+                            <h3>${insight.title}</h3>
+                            <p>${insight.description}</p>
+                            <div class="insight-value">${insight.value}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Generate insights
+        function generateInsights() {
+            const insights = [];
+            
+            // Best activity for mood
+            const activityMoodMap = {};
+            moodEntries.forEach(entry => {
+                entry.activities.forEach(activity => {
+                    if (!activityMoodMap[activity]) {
+                        activityMoodMap[activity] = { total: 0, count: 0 };
+                    }
+                    activityMoodMap[activity].total += entry.mood;
+                    activityMoodMap[activity].count += 1;
+                });
+            });
+
+            let bestActivity = null;
+            let highestAvg = 0;
+            for (const [activity, data] of Object.entries(activityMoodMap)) {
+                const avg = data.total / data.count;
+                if (avg > highestAvg) {
+                    highestAvg = avg;
+                    bestActivity = activity;
+                }
+            }
+
+            if (bestActivity) {
+                const activityEmojis = {
+                    exercise: '🏃‍♀️',
+                    work: '💼',
+                    social: '👥',
+                    family: '👨‍👩‍👧‍👦',
+                    sleep: '😴',
+                    hobby: '🎨',
+                    study: '📚',
+                    relax: '🧘‍♂️'
+                };
+                
+                insights.push({
+                    icon: activityEmojis[bestActivity] || '🎯',
+                    title: 'Your Mood Booster',
+                    description: `${bestActivity.charAt(0).toUpperCase() + bestActivity.slice(1)} activities help your mood the most`,
+                    value: `${highestAvg.toFixed(1)}/5 avg mood`
+                });
+            }
+
+            // Weekly trend
+            const recentEntries = moodEntries.slice(0, 7);
+            const weeklyAvg = recentEntries.reduce((sum, entry) => sum + entry.mood, 0) / recentEntries.length;
+            const previousWeek = moodEntries.slice(7, 14);
+            const previousAvg = previousWeek.length > 0 ? 
+                previousWeek.reduce((sum, entry) => sum + entry.mood, 0) / previousWeek.length : weeklyAvg;
+            
+            const trend = weeklyAvg > previousAvg ? 'improving' : weeklyAvg < previousAvg ? 'declining' : 'stable';
+            const trendIcons = { improving: '📈', declining: '📉', stable: '➡️' };
+            
+            insights.push({
+                icon: trendIcons[trend],
+                title: 'Weekly Trend',
+                description: `Your mood is ${trend} compared to last week`,
+                value: `${weeklyAvg.toFixed(1)}/5 this week`
+            });
+
+            // Consistency
+            const daysTracked = new Set(moodEntries.map(e => e.date)).size;
+            const daysSinceFirst = moodEntries.length > 0 ? 
+                Math.ceil((new Date() - new Date(moodEntries[moodEntries.length - 1].date)) / (1000 * 60 * 60 * 24)) : 0;
+            const consistency = daysSinceFirst > 0 ? (daysTracked / daysSinceFirst * 100) : 0;
+            
+            insights.push({
+                icon: '🎯',
+                title: 'Consistency Score',
+                description: 'How regularly you track your mood',
+                value: `${Math.round(consistency)}%`
+            });
+
+            return insights;
+        }
+
+        // Utility functions
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            document.getElementById('successText').textContent = message;
+            successMsg.classList.remove('hidden');
+            
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
