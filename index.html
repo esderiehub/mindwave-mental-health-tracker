@@ -168,29 +168,36 @@
         </section>
 
         <!-- Journal Section -->
-        <section id="journal" class="section">
-            <div class="container">
-                <h1>Journal 📝</h1>
-                <div class="journal-container">
-                    <div class="journal-header">
-                        <button class="add-entry-btn" onclick="showJournalForm()">
-                            ➕ New Entry
-                        </button>
-                    </div>
-                    <div id="journal-form" class="journal-form" style="display: none;">
-                        <input type="text" id="journal-title" placeholder="Entry title...">
-                        <textarea id="journal-content" placeholder="Write your thoughts..."></textarea>
-                        <div class="journal-actions">
-                            <button onclick="saveJournalEntry()">Save</button>
-                            <button onclick="hideJournalForm()">Cancel</button>
-                        </div>
-                    </div>
-                    <div id="journal-entries">
-                        <p class="empty-state">Your private thoughts and reflections will appear here.</p>
-                    </div>
+<section id="journal" class="section">
+    <div class="container">
+        <h1>Journal 📝</h1>
+        <div class="journal-container">
+            <div class="journal-header">
+                <button class="add-entry-btn" onclick="showJournalForm()">
+                    ➕ New Entry
+                </button>
+            </div>
+            <div id="journal-form" class="journal-form" style="display: none;">
+                <input type="text" id="journal-title" placeholder="Entry title..." required>
+                <textarea id="journal-content" placeholder="Write your thoughts..." required></textarea>
+                <div class="journal-actions">
+                    <button type="button" onclick="saveJournalEntry()" class="save-btn">Save</button>
+                    <button type="button" onclick="hideJournalForm()" class="cancel-btn">Cancel</button>
                 </div>
             </div>
-        </section>
+            <div id="journal-entries">
+                <p class="empty-state">Your private thoughts and reflections will appear here.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard'daki buton -->
+<button class="track-btn" onclick="switchToTab('track')">
+    <i class="plus-icon">➕</i>
+    Track Your Mood Now
+</button>
+
     </main>
 
     <script src="script.js"></script>
