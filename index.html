@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="style.css">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,196 +10,279 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="brain-icon">🧠</i>
-                <span>MindWave</span>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <span class="brain-icon">🧠</span>
+                    <span class="logo-text">MindWave</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button></li>
+                    <li><button class="nav-btn" onclick="showSection('track')">Track Mood</button></li>
+                    <li><button class="nav-btn" onclick="showSection('insights')">Insights</button></li>
+                    <li><button class="nav-btn" onclick="showSection('journal')">Journal</button></li>
+                </ul>
             </div>
-            <ul class="nav-menu">
-                <li><button class="nav-link active" data-tab="dashboard">Dashboard</button></li>
-                <li><button class="nav-link" data-tab="track">Track Mood</button></li>
-                <li><button class="nav-link" data-tab="insights">Insights</button></li>
-                <li><button class="nav-link" data-tab="journal">Journal</button></li>
-            </ul>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="section active">
-            <div class="container">
-                <div class="welcome-header">
-                    <h1>Welcome back! 👋</h1>
-                    <p>How are you feeling today?</p>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <h3 id="total-entries">0</h3>
-                        <p>Total Entries</p>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🔥</div>
-                        <h3 id="current-streak">0</h3>
-                        <p>Day Streak</p>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">😊</div>
-                        <h3 id="avg-mood">--</h3>
-                        <p>Avg Mood</p>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⚡</div>
-                        <h3 id="avg-energy">--</h3>
-                        <p>Avg Energy</p>
-                    </div>
-                </div>
-
-                <!-- Quick Track Button -->
-                <div class="quick-track">
-                    <button class="track-btn" onclick="switchToTab('track')">
-                        <i class="plus-icon">➕</i>
-                        Track Your Mood Now
-                    </button>
-                </div>
-
-                <!-- Chart Container -->
-                <div class="chart-container">
-                    <h2>Your Mood Journey</h2>
-                    <canvas id="moodChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Track Mood Section -->
-        <section id="track" class="section">
-            <div class="container">
-                <h1>Track Your Mood 🎯</h1>
-                
-                <form id="mood-form" class="mood-form">
-                    <!-- Date Input -->
-                    <div class="form-group">
-                        <label>Date:</label>
-                        <input type="date" id="mood-date" required>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="container">
+                    <div class="welcome-header">
+                        <h1>Welcome back! 👋</h1>
+                        <p class="subtitle">How are you feeling today?</p>
+                        <div class="current-date" id="currentDate"></div>
                     </div>
 
-                    <!-- Mood Selection -->
-                    <div class="form-group">
-                        <label>How do you feel?</label>
-                        <div class="mood-selector">
-                            <div class="mood-option" data-value="1">
-                                <span class="mood-emoji">😢</span>
-                                <span>Very Sad</span>
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card blue">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-content">
+                                <h3 id="totalEntries">0</h3>
+                                <p>Total Entries</p>
                             </div>
-                            <div class="mood-option" data-value="2">
-                                <span class="mood-emoji">😔</span>
-                                <span>Sad</span>
+                        </div>
+                        <div class="stat-card orange">
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-content">
+                                <h3 id="currentStreak">0</h3>
+                                <p>Day Streak</p>
                             </div>
-                            <div class="mood-option" data-value="3">
-                                <span class="mood-emoji">😐</span>
-                                <span>Neutral</span>
+                        </div>
+                        <div class="stat-card green">
+                            <div class="stat-icon">😊</div>
+                            <div class="stat-content">
+                                <h3 id="avgMood">--</h3>
+                                <p>Avg Mood</p>
                             </div>
-                            <div class="mood-option" data-value="4">
-                                <span class="mood-emoji">😊</span>
-                                <span>Happy</span>
-                            </div>
-                            <div class="mood-option" data-value="5">
-                                <span class="mood-emoji">😄</span>
-                                <span>Very Happy</span>
+                        </div>
+                        <div class="stat-card purple">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-content">
+                                <h3 id="avgEnergy">--</h3>
+                                <p>Avg Energy</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Energy Slider -->
-                    <div class="form-group">
-                        <label>Energy Level: <span id="energy-value">5</span>/10</label>
-                        <input type="range" id="energy-slider" min="1" max="10" value="5">
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-action-btn primary" onclick="showSection('track')">
+                            <span class="btn-icon">➕</span>
+                            <span>Track Your Mood Now</span>
+                        </button>
+                        <button class="quick-action-btn secondary" onclick="showSection('journal')">
+                            <span class="btn-icon">📝</span>
+                            <span>Write in Journal</span>
+                        </button>
                     </div>
 
-                    <!-- Activities -->
-                    <div class="form-group">
-                        <label>Activities Today:</label>
-                        <div class="activity-tags">
-                            <span class="tag" data-activity="exercise">🏃‍♂️ Exercise</span>
-                            <span class="tag" data-activity="study">📚 Study</span>
-                            <span class="tag" data-activity="social">👥 Social</span>
-                            <span class="tag" data-activity="gaming">🎮 Gaming</span>
-                            <span class="tag" data-activity="music">🎵 Music</span>
-                            <span class="tag" data-activity="nature">🌿 Nature</span>
-                            <span class="tag" data-activity="rest">😴 Rest</span>
-                            <span class="tag" data-activity="food">🍕 Good Food</span>
+                    <!-- Chart Section -->
+                    <div class="chart-section">
+                        <div class="chart-header">
+                            <h2>Your Mood Journey</h2>
+                            <div class="chart-period">
+                                <button class="period-btn active" onclick="updateChartPeriod(7)">7D</button>
+                                <button class="period-btn" onclick="updateChartPeriod(30)">30D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="moodChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Notes -->
-                    <div class="form-group">
-                        <label>Notes (optional):</label>
-                        <textarea id="mood-notes" placeholder="How was your day?"></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Save Entry</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- Insights Section -->
-        <section id="insights" class="section">
-            <div class="container">
-                <h1>Your Insights 🔍</h1>
-                <div id="insights-content">
-                    <div class="insight-card">
-                        <h3>Pattern Analysis</h3>
-                        <p>Start tracking your mood to unlock personalized insights!</p>
-                    </div>
-                    <div class="insight-card">
-                        <h3>Activity Impact</h3>
-                        <p>Discover which activities boost your mood the most.</p>
-                    </div>
-                    <div class="insight-card">
-                        <h3>Weekly Trends</h3>
-                        <p>See how your mood changes throughout the week.</p>
+                    <!-- Recent Entries -->
+                    <div class="recent-entries">
+                        <h2>Recent Entries</h2>
+                        <div id="recentEntriesList" class="entries-list">
+                            <p class="empty-state">Start tracking to see your entries here!</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Journal Section -->
-<section id="journal" class="section">
-    <div class="container">
-        <h1>Journal 📝</h1>
-        <div class="journal-container">
-            <div class="journal-header">
-                <button class="add-entry-btn" onclick="showJournalForm()">
-                    ➕ New Entry
-                </button>
-            </div>
-            <div id="journal-form" class="journal-form" style="display: none;">
-                <input type="text" id="journal-title" placeholder="Entry title..." required>
-                <textarea id="journal-content" placeholder="Write your thoughts..." required></textarea>
-                <div class="journal-actions">
-                    <button type="button" onclick="saveJournalEntry()" class="save-btn">Save</button>
-                    <button type="button" onclick="hideJournalForm()" class="cancel-btn">Cancel</button>
+            <!-- Track Mood Section -->
+            <section id="track" class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1>Track Your Mood 🎯</h1>
+                        <p>How are you feeling right now?</p>
+                    </div>
+
+                    <div class="track-form">
+                        <form id="moodForm">
+                            <!-- Date Selection -->
+                            <div class="form-group">
+                                <label class="form-label">Date</label>
+                                <input type="date" id="moodDate" class="date-input" required>
+                            </div>
+
+                            <!-- Mood Selection -->
+                            <div class="form-group">
+                                <label class="form-label">How do you feel? <span class="required">*</span></label>
+                                <div class="mood-grid">
+                                    <div class="mood-item" data-mood="1">
+                                        <div class="mood-emoji">😢</div>
+                                        <div class="mood-label">Very Sad</div>
+                                    </div>
+                                    <div class="mood-item" data-mood="2">
+                                        <div class="mood-emoji">😔</div>
+                                        <div class="mood-label">Sad</div>
+                                    </div>
+                                    <div class="mood-item" data-mood="3">
+                                        <div class="mood-emoji">😐</div>
+                                        <div class="mood-label">Neutral</div>
+                                    </div>
+                                    <div class="mood-item" data-mood="4">
+                                        <div class="mood-emoji">😊</div>
+                                        <div class="mood-label">Happy</div>
+                                    </div>
+                                    <div class="mood-item" data-mood="5">
+                                        <div class="mood-emoji">😄</div>
+                                        <div class="mood-label">Very Happy</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Energy Level -->
+                            <div class="form-group">
+                                <label class="form-label">Energy Level: <span id="energyValue">5</span>/10</label>
+                                <div class="slider-container">
+                                    <input type="range" id="energySlider" min="1" max="10" value="5" class="energy-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                            </div>
+
+                            <!-- Activities -->
+                            <div class="form-group">
+                                <label class="form-label">What did you do today?</label>
+                                <div class="activities-grid">
+                                    <div class="activity-tag" data-activity="exercise">
+                                        <span class="activity-emoji">🏃‍♂️</span>
+                                        <span>Exercise</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="study">
+                                        <span class="activity-emoji">📚</span>
+                                        <span>Study</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="social">
+                                        <span class="activity-emoji">👥</span>
+                                        <span>Social</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="gaming">
+                                        <span class="activity-emoji">🎮</span>
+                                        <span>Gaming</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="music">
+                                        <span class="activity-emoji">🎵</span>
+                                        <span>Music</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="nature">
+                                        <span class="activity-emoji">🌿</span>
+                                        <span>Nature</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="rest">
+                                        <span class="activity-emoji">😴</span>
+                                        <span>Rest</span>
+                                    </div>
+                                    <div class="activity-tag" data-activity="food">
+                                        <span class="activity-emoji">🍕</span>
+                                        <span>Good Food</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="form-group">
+                                <label class="form-label">Notes (optional)</label>
+                                <textarea id="moodNotes" class="notes-textarea" placeholder="How was your day? Any thoughts you'd like to remember?"></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="submit-btn">
+                                <span class="btn-icon">💾</span>
+                                Save Mood Entry
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div id="journal-entries">
-                <p class="empty-state">Your private thoughts and reflections will appear here.</p>
+            </section>
+
+            <!-- Insights Section -->
+            <section id="insights" class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1>Your Insights 🔍</h1>
+                        <p>Discover patterns in your mental health journey</p>
+                    </div>
+
+                    <div id="insightsContent" class="insights-content">
+                        <div class="insight-placeholder">
+                            <div class="placeholder-icon">📈</div>
+                            <h3>Start Tracking to Unlock Insights!</h3>
+                            <p>Track your mood for a few days to discover personalized insights about your mental health patterns.</p>
+                            <button class="cta-btn" onclick="showSection('track')">Start Tracking</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Journal Section -->
+            <section id="journal" class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1>Personal Journal 📝</h1>
+                        <p>Your private space for thoughts and reflections</p>
+                    </div>
+
+                    <div class="journal-actions">
+                        <button class="new-entry-btn" onclick="showJournalForm()">
+                            <span class="btn-icon">➕</span>
+                            New Entry
+                        </button>
+                    </div>
+
+                    <!-- Journal Form -->
+                    <div id="journalForm" class="journal-form hidden">
+                        <div class="form-header">
+                            <h3>New Journal Entry</h3>
+                            <button class="close-btn" onclick="hideJournalForm()">✕</button>
+                        </div>
+                        <form id="journalEntryForm">
+                            <input type="text" id="journalTitle" placeholder="What's on your mind?" class="journal-title-input" required>
+                            <textarea id="journalContent" placeholder="Write your thoughts here..." class="journal-content-input" required></textarea>
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" onclick="hideJournalForm()">Cancel</button>
+                                <button type="submit" class="save-btn">Save Entry</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Journal Entries -->
+                    <div id="journalEntries" class="journal-entries">
+                        <div class="journal-placeholder">
+                            <div class="placeholder-icon">📔</div>
+                            <h3>No journal entries yet</h3>
+                            <p>Start writing your thoughts and reflections. Your entries are completely private and stored only on your device.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message hidden">
+            <div class="success-content">
+                <span class="success-icon">✅</span>
+                <span class="success-text">Entry saved successfully!</span>
             </div>
         </div>
     </div>
-</section>
-
-<!-- Dashboard'daki buton -->
-<button class="track-btn" onclick="switchToTab('track')">
-    <i class="plus-icon">➕</i>
-    Track Your Mood Now
-</button>
-
-    </main>
 
     <script src="script.js"></script>
 </body>
