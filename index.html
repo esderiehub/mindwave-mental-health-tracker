@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="style.css">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -154,7 +153,6 @@
                                 <label class="form-label">Energy Level: <span id="energyValue">5</span>/10</label>
                                 <div class="slider-container">
                                     <input type="range" id="energySlider" min="1" max="10" value="5" class="energy-slider">
-                                    <div class="slider-track"></div>
                                 </div>
                             </div>
 
@@ -186,21 +184,13 @@
                                         <span class="activity-emoji">🌿</span>
                                         <span>Nature</span>
                                     </div>
-                                    <div class="activity-tag" data-activity="rest">
-                                        <span class="activity-emoji">😴</span>
-                                        <span>Rest</span>
-                                    </div>
-                                    <div class="activity-tag" data-activity="food">
-                                        <span class="activity-emoji">🍕</span>
-                                        <span>Good Food</span>
-                                    </div>
                                 </div>
                             </div>
 
                             <!-- Notes -->
                             <div class="form-group">
                                 <label class="form-label">Notes (optional)</label>
-                                <textarea id="moodNotes" class="notes-textarea" placeholder="How was your day? Any thoughts you'd like to remember?"></textarea>
+                                <textarea id="moodNotes" class="notes-textarea" placeholder="How was your day?"></textarea>
                             </div>
 
                             <!-- Submit Button -->
@@ -220,12 +210,11 @@
                         <h1>Your Insights 🔍</h1>
                         <p>Discover patterns in your mental health journey</p>
                     </div>
-
                     <div id="insightsContent" class="insights-content">
                         <div class="insight-placeholder">
                             <div class="placeholder-icon">📈</div>
                             <h3>Start Tracking to Unlock Insights!</h3>
-                            <p>Track your mood for a few days to discover personalized insights about your mental health patterns.</p>
+                            <p>Track your mood for a few days to discover personalized insights.</p>
                             <button class="cta-btn" onclick="showSection('track')">Start Tracking</button>
                         </div>
                     </div>
@@ -268,7 +257,7 @@
                         <div class="journal-placeholder">
                             <div class="placeholder-icon">📔</div>
                             <h3>No journal entries yet</h3>
-                            <p>Start writing your thoughts and reflections. Your entries are completely private and stored only on your device.</p>
+                            <p>Start writing your thoughts and reflections.</p>
                         </div>
                     </div>
                 </div>
