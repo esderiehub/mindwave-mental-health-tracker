@@ -1,61 +1,56 @@
 var App = (function () {
 
-    var allMatches = [];
-    var matchMap   = {};
+    var upcomingMatches = [];
+    var historyMatches  = [];
+    var analyzedMatches = [];
+    var matchMap        = {};
 
     function init() {
         console.log("SportAnaliz basliyor...");
+        showMainLoader();
 
-        if (RenderService.showLoader)     RenderService.showLoader("oddsTableBody");
-        if (RenderService.showGridLoader) RenderService.showGridLoader("liveGrid");
+        Promise.all([
+            ApiService.fetchAllLeagues(),
+            ApiService.fetchAllHistory()
+        ]).then(function (results) {
+            upcomingMatches = results[0];
+            historyMatches  = results[1];
 
-        ApiService.fetchAllLeagues()
-            .then(function (matches) {
-                allMatches = matches;
-                matchMap   = {};
-                matches.forEach(function (m) { matchMap[m.id] = m; });
+            console.log("Upcoming:", upcomingMatches.length,
+                        "| Gecmis:", historyMatches.length);
 
-                console.log("Yuklendi:", matches.length, "mac");
+            // Analiz motoru çalıştır
+            analyzedMatches = Analyzer.analyzeAll(upcomingMatches, historyMatches);
 
-                RenderService.renderOddsTable(matches);
+            // Map oluştur
+            matchMap = {};
+            analyzedMatches.forEach(function (m) { matchMap[m.id] = m; });
 
-                if (RenderService.renderBookmakerSelector) {
-                    RenderService.renderBookmakerSelector(matches);
-                }
-                if (matches.length > 0 && RenderService.renderBookmakerTable) {
-                    RenderService.renderBookmakerTable(matches[0]);
-                }
-                if (RenderService.renderLastUpdate) {
-                    RenderService.renderLastUpdate();
-                }
-            })
-            .catch(function (err) {
-                console.error("Yuklenemedi:", err);
-                if (RenderService.showError) {
-                    RenderService.showError("oddsTableBody",
-                        "Veriler yuklenemedi. Sayfayi yenileyin.");
-                }
-            });
+            // Render
+            RenderService.renderOddsTable(analyzedMatches);
+            RenderService.renderStats(upcomingMatches, historyMatches);
+            updateLastUpdate();
 
-        ApiService.fetchLiveMatches()
-            .then(function (live) {
-                if (RenderService.renderLiveMatches) {
-                    RenderService.renderLiveMatches(live);
-                }
-            })
-            .catch(function () {
-                if (RenderService.renderLiveMatches) {
-                    RenderService.renderLiveMatches([]);
-                }
-            });
+        }).catch(function (err) {
+            console.error("Yuklenemedi:", err);
+            showError("Veriler yüklenemedi. Demo veri gösteriliyor.");
+
+            // Demo fallback
+            upcomingMatches = ApiService.getDemoUpcoming();
+            historyMatches  = ApiService.getDemoHistory();
+            analyzedMatches = Analyzer.analyzeAll(upcomingMatches, historyMatches);
+            matchMap = {};
+            analyzedMatches.forEach(function (m) { matchMap[m.id] = m; });
+            RenderService.renderOddsTable(analyzedMatches);
+            RenderService.renderStats(upcomingMatches, historyMatches);
+            updateLastUpdate();
+        });
     }
 
     function showAnalysis(matchId) {
         var match = matchMap[matchId];
-        if (!match) { console.error("Mac yok:", matchId); return; }
-        if (RenderService.renderAnalysisModal) {
-            RenderService.renderAnalysisModal(match);
-        }
+        if (!match) return;
+        RenderService.renderAnalysisModal(match);
     }
 
     function filterMatches() {
@@ -67,7 +62,7 @@ var App = (function () {
         var status = statusEl ? statusEl.value : "";
         var search = searchEl ? searchEl.value.toLowerCase() : "";
 
-        var filtered = allMatches.filter(function (m) {
+        var filtered = analyzedMatches.filter(function (m) {
             var lOk = !league ||
                 m.leagueCode.toLowerCase().indexOf(league) > -1 ||
                 m.league.toLowerCase().indexOf(league)     > -1;
@@ -80,6 +75,30 @@ var App = (function () {
         });
 
         RenderService.renderOddsTable(filtered);
+    }
+
+    function showMainLoader() {
+        var tb = document.getElementById("oddsTableBody");
+        if (tb) tb.innerHTML =
+            "<tr><td colspan='10' style='text-align:center;padding:40px'>" +
+            "<div class='loader'></div>" +
+            "<p style='color:#aaa;margin-top:12px'>Veriler yükleniyor...</p>" +
+            "</td></tr>";
+    }
+
+    function showError(msg) {
+        var tb = document.getElementById("oddsTableBody");
+        if (tb) tb.innerHTML =
+            "<tr><td colspan='10' style='text-align:center;padding:40px;color:#ff6b6b'>" +
+            "⚠️ " + msg + "</td></tr>";
+    }
+
+    function updateLastUpdate() {
+        var el = document.getElementById("lastUpdate");
+        if (el) el.textContent =
+            "Son güncelleme: " +
+            new Date().toLocaleTimeString("tr-TR",
+                { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -99,12 +118,11 @@ var App = (function () {
         if (el) el.addEventListener("click", init);
 
         setInterval(init, CONFIG.REFRESH);
-        console.log("Otomatik yenileme aktif:", CONFIG.REFRESH / 1000, "sn");
     });
 
     return {
-        init:          init,
-        showAnalysis:  showAnalysis,
+        init:         init,
+        showAnalysis: showAnalysis,
         filterMatches: filterMatches
     };
 

@@ -15,7 +15,10 @@ var CONFIG = {
         "soccer_portugal_primeira_liga"
     ],
 
-    REGIONS: "eu",
-    MARKETS: "h2h",
-    REFRESH: 300000
+    REGIONS:        "eu",
+    MARKETS:        "h2h",
+    REFRESH:        300000,
+    HISTORY_DAYS:   7,       // Kaç günlük geçmiş çekilsin
+    MIN_SIMILARITY: 0.65,    // Minimum benzerlik skoru
+    TOP_SIMILAR:    5        // En benzer kaç maç gösterilsin
 };
